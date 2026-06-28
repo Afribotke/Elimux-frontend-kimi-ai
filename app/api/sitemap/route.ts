@@ -12,16 +12,16 @@ export async function GET() {
     const loc = route === "" ? baseUrl : baseUrl + "/" + route;
     const lastmod = new Date().toISOString().split("T")[0];
     const priority = route === "" ? "1.0" : "0.8";
-    urlEntries += "  <url>" + "\n";
-    urlEntries += "    <loc>" + loc + "</loc>" + "\n";
-    urlEntries += "    <lastmod>" + lastmod + "</lastmod>" + "\n";
-    urlEntries += "    <changefreq>weekly</changefreq>" + "\n";
-    urlEntries += "    <priority>" + priority + "</priority>" + "\n";
-    urlEntries += "  </url>" + "\n";
+    urlEntries += "  <url>\n";
+    urlEntries += "    <loc>" + loc + "</loc>\n";
+    urlEntries += "    <lastmod>" + lastmod + "</lastmod>\n";
+    urlEntries += "    <changefreq>weekly</changefreq>\n";
+    urlEntries += "    <priority>" + priority + "</priority>\n";
+    urlEntries += "  </url>\n";
   }
 
-  const sitemap = '<?xml version="1.0" encoding="UTF-8"?>' + "\n" +
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "\n" +
+  const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urlEntries +
     '</urlset>';
 
@@ -32,4 +32,3 @@ export async function GET() {
     },
   });
 }
-
