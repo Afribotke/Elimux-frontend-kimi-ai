@@ -31,12 +31,10 @@ export class AIRouter {
     }
 
     try {
-      const aiRequest: AIRequest = {
-        prompt: request.query,
-        context: request.context,
-      };
-
-      const response = await this.provider.search(aiRequest);
+      // Use generate method instead of search
+      const response = await this.provider.generate(request.query, {
+        systemPrompt: request.context || "You are an educational search assistant. Help students find institutions and programs.",
+      });
 
       let parsedResults = [];
       try {
