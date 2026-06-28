@@ -7,22 +7,23 @@ export async function GET() {
     "", "discover", "institutions", "programs", "about", "contact", "privacy", "terms"
   ];
 
-  const urlEntries = routes.map((route) => {
-    const loc = route === "" ? baseUrl : ${baseUrl}/;
+  let urlEntries = "";
+  for (const route of routes) {
+    const loc = route === "" ? baseUrl : baseUrl + "/" + route;
     const lastmod = new Date().toISOString().split("T")[0];
     const priority = route === "" ? "1.0" : "0.8";
-    return   <url>
-    <loc></loc>
-    <lastmod></lastmod>
-    <changefreq>weekly</changefreq>
-    <priority></priority>
-  </url>;
-  }).join("\n");
+    urlEntries += "  <url>" + "\n";
+    urlEntries += "    <loc>" + loc + "</loc>" + "\n";
+    urlEntries += "    <lastmod>" + lastmod + "</lastmod>" + "\n";
+    urlEntries += "    <changefreq>weekly</changefreq>" + "\n";
+    urlEntries += "    <priority>" + priority + "</priority>" + "\n";
+    urlEntries += "  </url>" + "\n";
+  }
 
-  const sitemap = <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-</urlset>;
+  const sitemap = "<?xml version=""1.0"" encoding=""UTF-8""?>" + "\n" +
+    "<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">" + "\n" +
+    urlEntries +
+    "</urlset>";
 
   return new NextResponse(sitemap, {
     headers: {
@@ -31,3 +32,4 @@ export async function GET() {
     },
   });
 }
+
