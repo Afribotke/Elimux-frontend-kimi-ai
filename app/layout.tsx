@@ -80,7 +80,17 @@ export default function RootLayout({
           <CookieConsent />
           <Toaster />
         </AuthProvider>
-      </body>
+        <script dangerouslySetInnerHTML={{ __html: `
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) => {
+          console.log('SW registration failed:', err);
+        });
+      });
+    }
+  ` }} />
+</body>
     </html>
   );
 }
+
