@@ -1,22 +1,8 @@
 ﻿"use client";
 
 import { StarRating } from "./StarRating";
-import { formatDistanceToNow } from "date-fns";
 
-interface Review {
-  id: string;
-  rating: number;
-  title: string;
-  content: string;
-  created_at: string;
-  users: { full_name: string };
-}
-
-interface ReviewCardProps {
-  review: Review;
-}
-
-export function ReviewCard({ review }: ReviewCardProps) {
+export function ReviewCard({ review }) {
   return (
     <div className="bg-black border border-gold-900/30 rounded-lg p-6 space-y-3">
       <div className="flex items-center justify-between">
@@ -26,18 +12,12 @@ export function ReviewCard({ review }: ReviewCardProps) {
           </div>
           <div>
             <p className="text-white font-medium">{review.users?.full_name || "Anonymous"}</p>
-            <p className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
-            </p>
+            <p className="text-xs text-gray-500">{new Date(review.created_at).toLocaleDateString()}</p>
           </div>
         </div>
         <StarRating rating={review.rating} />
       </div>
-      
-      {review.title && (
-        <h4 className="text-white font-semibold">{review.title}</h4>
-      )}
-      
+      {review.title && <h4 className="text-white font-semibold">{review.title}</h4>}
       <p className="text-gray-400 text-sm leading-relaxed">{review.content}</p>
     </div>
   );

@@ -4,13 +4,8 @@ import { useState, useEffect } from "react";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewForm } from "./ReviewForm";
 import { StarRating } from "./StarRating";
-import { Button } from "@/components/ui/button";
 
-interface ReviewsListProps {
-  institutionId: string;
-}
-
-export function ReviewsList({ institutionId }: ReviewsListProps) {
+export function ReviewsList({ institutionId }) {
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [total, setTotal] = useState(0);
@@ -55,7 +50,7 @@ export function ReviewsList({ institutionId }: ReviewsListProps) {
         <p className="text-gray-500 text-center py-8">No reviews yet. Be the first to review!</p>
       ) : (
         <div className="space-y-4">
-          {reviews.map((review: any) => (
+          {reviews.map((review) => (
             <ReviewCard key={review.id} review={review} />
           ))}
         </div>
