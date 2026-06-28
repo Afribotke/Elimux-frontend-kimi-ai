@@ -14,42 +14,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Query required" }, { status: 400 });
     }
 
-    // Search institutions
-    let institutionQuery = supabase
-      .from("institutions")
-      .select("*")
-      .ilike("name", `%${query}%`)
-      .limit(10);
-
-    if (filters?.country) {
-      institutionQuery = institutionQuery.eq("country", filters.country);
-    }
-    if (filters?.type) {
-      institutionQuery = institutionQuery.eq("type", filters.type);
-    }
+    let institutionQuery = supabase.from("institutions").select("*").ilike("name", `%${query}%`).limit(10);
+    if (filters?.country) institutionQuery = institutionQuery.eq("country", filters.country);
+    if (filters?.type) institutionQuery = institutionQuery.eq("type", filters.type);
 
     const { data: institutions, error: instError } = await institutionQuery;
+    if (instError) return NextResponse.json({ error: instError.message }, { status: 500 });
 
-    if (instError) {
-      return NextResponse.json({ error: instError.message }, { status: 500 });
-    }
-
-    // Search programs
-    let programQuery = supabase
-      .from("programs")
-      .select("*, institutions(name, country)")
-      .ilike("name", `%${query}%`)
-      .limit(10);
-
-    if (filters?.degree_type) {
-      programQuery = programQuery.eq("degree_type", filters.degree_type);
-    }
+    let programQuery = supabase.from("programs").select("*, institutions(name, country)").ilike("name", `%${query}%`).limit(10);
+    if (filters?.degree_type) programQuery = programQuery.eq("degree_type", filters.degree_type);
 
     const { data: programs, error: progError } = await programQuery;
-
-    if (progError) {
-      return NextResponse.json({ error: progError.message }, { status: 500 });
-    }
+    if (progError) return NextResponse.json({ error: progError.message }, { status: 500 });
 
     return NextResponse.json({
       success: true,
@@ -59,7 +35,6 @@ export async function POST(request: Request) {
       total: (institutions?.length || 0) + (programs?.length || 0),
     });
   } catch (error) {
-    console.error("DB Search Error:", error);
     return NextResponse.json(
       { error: "Search failed", details: error instanceof Error ? error.message : "Unknown" },
       { status: 500 }

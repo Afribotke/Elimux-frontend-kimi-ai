@@ -7,10 +7,7 @@ export async function POST(request: Request) {
     const { query } = await request.json();
 
     if (!query || typeof query !== "string") {
-      return NextResponse.json(
-        { error: "Query is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Query is required" }, { status: 400 });
     }
 
     const configs = getProviderConfigs().filter(c => c.enabled && c.apiKey);

@@ -40,7 +40,6 @@ export class AIRouter {
       };
     }
 
-    // Try each provider in priority order
     for (const { name, provider } of this.providers) {
       try {
         const aiRequest: AIRequest = {
