@@ -22,16 +22,13 @@ export class AIRouter {
     try {
       const response = await this.provider.search(request);
 
-      // Extract JSON from response
       let parsedResults = [];
       try {
         const content = response.content || "";
-        // Try to find JSON in code blocks
         const jsonBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
         const jsonMatch = jsonBlockMatch ? jsonBlockMatch[1] : content;
         parsedResults = JSON.parse(jsonMatch);
       } catch (e) {
-        // If JSON parsing fails, return raw content
         parsedResults = [{ title: "AI Response", content: response.content }];
       }
 
