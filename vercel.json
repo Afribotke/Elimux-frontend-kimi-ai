@@ -1,17 +1,4 @@
 ﻿{
   "version": 2,
-  "name": "elimux-frontend",
-  "alias": ["www.elimux.ke"],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "name": "elimux-frontend"
 }
