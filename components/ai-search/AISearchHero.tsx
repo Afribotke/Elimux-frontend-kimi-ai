@@ -2,7 +2,7 @@
 
 import { AISearchBar } from "./AISearchBar";
 import { SearchResults } from "./SearchResults";
-import { useAISearch } from "@/hooks/use-ai-search";
+import { useAISearch } from "@/lib/hooks/use-ai-search";
 import { Globe, GraduationCap, Users, Sparkles } from "lucide-react";
 
 export function AISearchHero() {
