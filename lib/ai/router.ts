@@ -31,15 +31,17 @@ export class AIRouter {
     }
 
     try {
-      // Use generate method instead of search
-      const response = await this.provider.generate(request.query, {
+      const aiRequest: AIRequest = {
+        prompt: request.query,
         systemPrompt: request.context || "You are an educational search assistant. Help students find institutions and programs.",
-      });
-
+      };
+      
+      const response = await this.provider.generate(aiRequest);
+      
       let parsedResults = [];
       try {
         const content = response.content || "";
-        const jsonBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+        const jsonBlockMatch = content.match(/`json\s*([\s\S]*?)\s*`/);
         const jsonMatch = jsonBlockMatch ? jsonBlockMatch[1] : content;
         parsedResults = JSON.parse(jsonMatch);
       } catch (e) {
