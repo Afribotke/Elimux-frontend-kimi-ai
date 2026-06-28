@@ -1,5 +1,16 @@
-import { AIProviderConfig, AISearchRequest, AISearchResponse } from "./types";
+import { AIProviderConfig, AIRequest, AIResponse } from "./types";
 import { AnthropicProvider } from "./providers/anthropic";
+
+export interface AISearchRequest {
+  query: string;
+  context?: string;
+}
+
+export interface AISearchResponse {
+  results: any[];
+  query: string;
+  error?: string;
+}
 
 export class AIRouter {
   private provider: AnthropicProvider | null = null;
@@ -20,7 +31,12 @@ export class AIRouter {
     }
 
     try {
-      const response = await this.provider.search(request);
+      const aiRequest: AIRequest = {
+        prompt: request.query,
+        context: request.context,
+      };
+
+      const response = await this.provider.search(aiRequest);
 
       let parsedResults = [];
       try {
