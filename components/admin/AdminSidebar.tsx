@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Globe, import { usePathname } from "next/navigation";
-import { Globe, import { 
+import { usePathname } from "next/navigation";
+import { 
   LayoutDashboard, 
   Users, 
   Building2, 
@@ -11,6 +11,7 @@ import { Globe, import {
   CreditCard, 
   BarChart3, 
   Settings,
+  Globe,
   LogOut
 } from "lucide-react";
 
@@ -22,7 +23,7 @@ const navItems = [
   { href: "/admin/applications", label: "Applications", icon: FileText },
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: '/admin/scraper', label: 'Scraper', icon: Globe },
+  { href: "/admin/scraper", label: "Scraper", icon: Globe },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -66,4 +67,3 @@ export function AdminSidebar() {
     </aside>
   );
 }
-
