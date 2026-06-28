@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { getProviderConfigs } from "@/lib/ai/config";
 import { AIRouter } from "@/lib/ai/router";
 
@@ -13,23 +13,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const configs = getProviderConfigs();
-    const config = configs.find(c => c.enabled && c.name === "anthropic");
-
-    if (!config) {
+    const configs = getProviderConfigs().filter(c => c.enabled && c.apiKey);
+    
+    if (configs.length === 0) {
       return NextResponse.json(
-        { error: "AI provider not configured" },
+        { error: "No AI providers configured. Check your API keys." },
         { status: 503 }
       );
     }
 
-    const router = new AIRouter(config);
+    const router = new AIRouter(configs);
     const results = await router.search({ query });
 
     return NextResponse.json({
       success: true,
       query,
       results: results.results,
+      provider: results.provider,
+      error: results.error,
     });
   } catch (error) {
     console.error("AI Search Error:", error);
