@@ -5,8 +5,24 @@ import { ReviewCard } from "./ReviewCard";
 import { ReviewForm } from "./ReviewForm";
 import { StarRating } from "./StarRating";
 
-export function ReviewsList({ institutionId }) {
-  const [reviews, setReviews] = useState([]);
+interface ReviewsListProps {
+  institutionId: string;
+}
+
+export function ReviewsList({ institutionId }: ReviewsListProps) {
+  interface Review {
+    id: string;
+    rating: number;
+    comment: string;
+    author: string;
+    date: string;
+    created_at: string;
+    title: string;
+    content: string;
+    users?: { full_name: string };
+  }
+
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [averageRating, setAverageRating] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -18,7 +34,7 @@ export function ReviewsList({ institutionId }) {
       setReviews(data.reviews || []);
       setAverageRating(data.averageRating || 0);
       setTotal(data.total || 0);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch reviews:", error);
     } finally {
       setLoading(false);

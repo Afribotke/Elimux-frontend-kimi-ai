@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "./StarRating";
 
-export function ReviewForm({ institutionId, onSubmit }) {
+interface ReviewFormProps {
+  institutionId: string;
+  onSubmit?: () => void;
+}
+
+export function ReviewForm({ institutionId, onSubmit }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (rating === 0) return;
 
@@ -34,9 +39,9 @@ export function ReviewForm({ institutionId, onSubmit }) {
         setRating(0);
         setTitle("");
         setContent("");
-        onSubmit();
+        onSubmit?.();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Review submission failed:", error);
     } finally {
       setLoading(false);

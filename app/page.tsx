@@ -1,4 +1,4 @@
-﻿import { Metadata } from "next";
+import { Metadata } from "next";
 import { AISearchHero } from "@/components/ai-search/AISearchHero";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -81,7 +81,13 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }) {
+interface FeatureCardProps {
+  icon: any;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="bg-black border border-gold-900/30 rounded-lg p-6 text-center hover:border-gold-700 transition-colors">
       <div className="flex justify-center mb-4">
@@ -93,7 +99,12 @@ function FeatureCard({ icon: Icon, title, description }) {
   );
 }
 
-function StatCard({ number, label }) {
+interface StatCardProps {
+  number: string;
+  label: string;
+}
+
+function StatCard({ number, label }: StatCardProps) {
   return (
     <div>
       <p className="text-3xl font-bold text-gold-500">{number}</p>

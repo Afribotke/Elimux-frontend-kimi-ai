@@ -2,7 +2,23 @@
 
 import { StarRating } from "./StarRating";
 
-export function ReviewCard({ review }) {
+interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  author: string;
+  date: string;
+  created_at: string;
+  title: string;
+  content: string;
+  users?: { full_name: string };
+}
+
+interface ReviewCardProps {
+  review: Review;
+}
+
+export function ReviewCard({ review }: ReviewCardProps) {
   return (
     <div className="bg-black border border-gold-900/30 rounded-lg p-6 space-y-3">
       <div className="flex items-center justify-between">

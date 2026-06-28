@@ -4,8 +4,17 @@ import { useState, useEffect } from "react";
 import { Trophy, Medal, Award } from "lucide-react";
 
 export function Leaderboard() {
-  const [leaders, setLeaders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  interface LeaderboardUser {
+    id: string;
+    full_name: string;
+    points: number;
+    rank: number;
+    referral_count?: number;
+    total_points?: number;
+  }
+
+const [leaders, setLeaders] = useState<LeaderboardUser[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetch("/api/gamification/leaderboard")
@@ -19,7 +28,7 @@ export function Leaderboard() {
 
   if (loading) return <p className="text-gray-400">Loading leaderboard...</p>;
 
-  const getRankIcon = (index) => {
+  const getRankIcon = (index: number) => {
     if (index === 0) return <Trophy className="h-5 w-5 text-gold-500" />;
     if (index === 1) return <Medal className="h-5 w-5 text-gray-300" />;
     if (index === 2) return <Award className="h-5 w-5 text-amber-600" />;

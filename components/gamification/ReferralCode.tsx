@@ -1,10 +1,14 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Share2, Check } from "lucide-react";
 
-export function ReferralCode({ code }) {
+interface ReferralCodeProps {
+  code: string;
+}
+
+export function ReferralCode({ code }: ReferralCodeProps) {
   const [copied, setCopied] = useState(false);
 
   const referralLink = `https://www.elimux.ke/register?ref=${code}`;

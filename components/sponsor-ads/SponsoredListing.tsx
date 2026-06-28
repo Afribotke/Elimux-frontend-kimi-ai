@@ -4,8 +4,25 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 
-export function SponsoredListing({ country, category }) {
-  const [ads, setAds] = useState([]);
+interface SponsoredListingProps {
+  country?: string;
+  category?: string;
+}
+
+export function SponsoredListing({ country, category }: SponsoredListingProps) {
+  interface Ad {
+    id: string;
+    title: string;
+    institution: string;
+    description: string;
+    target_url: string;
+    image_url: string;
+    logo?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+  }
+
+  const [ads, setAds] = useState<Ad[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -34,7 +51,23 @@ export function SponsoredListing({ country, category }) {
   );
 }
 
-function SponsoredCard({ ad }) {
+  interface Ad {
+    id: string;
+    title: string;
+    institution: string;
+    description: string;
+    target_url: string;
+    image_url: string;
+    logo?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+  }
+
+interface SponsoredCardProps {
+  ad: Ad;
+}
+
+function SponsoredCard({ ad }: SponsoredCardProps) {
   function handleClick() {
     fetch(`/api/sponsor-ads/click/${ad.id}`, { method: "POST" });
     window.open(ad.target_url, "_blank");

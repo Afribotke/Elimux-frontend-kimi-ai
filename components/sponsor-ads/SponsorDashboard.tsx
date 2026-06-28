@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MousePointer, DollarSign, TrendingUp } from "lucide-react";
 
-export function SponsorDashboard({ sponsorId }) {
-  const [campaigns, setCampaigns] = useState([]);
-  const [summary, setSummary] = useState(null);
+interface SponsorDashboardProps {
+  sponsorId: string;
+}
+
+export function SponsorDashboard({ sponsorId }: SponsorDashboardProps) {
+  interface Campaign {
+    id: string;
+    name: string;
+    title: string;
+    status: string;
+    budget: number;
+    spent: number;
+    clicks: number;
+    impressions: number;
+  }
+
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  interface Summary {
+    total_spent: number;
+    total_impressions: number;
+    total_clicks: number;
+    avg_ctr: number;
+  }
+
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,8 +53,8 @@ export function SponsorDashboard({ sponsorId }) {
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <SummaryCard icon={DollarSign} label="Total Spent" value={`$${summary.total_spent?.toFixed(2) || 0}`} />
-          <SummaryCard icon={Eye} label="Impressions" value={summary.total_impressions || 0} />
-          <SummaryCard icon={MousePointer} label="Clicks" value={summary.total_clicks || 0} />
+          <SummaryCard icon={Eye} label="Impressions" value={`${summary.total_impressions || 0}`} />
+          <SummaryCard icon={MousePointer} label="Clicks" value={`${summary.total_clicks || 0}`} />
           <SummaryCard icon={TrendingUp} label="CTR" value={`${summary.avg_ctr || 0}%`} />
         </div>
       )}
@@ -57,7 +79,13 @@ export function SponsorDashboard({ sponsorId }) {
   );
 }
 
-function SummaryCard({ icon: Icon, label, value }) {
+interface SummaryCardProps {
+  icon: any;
+  label: string;
+  value: string;
+}
+
+function SummaryCard({ icon: Icon, label, value }: SummaryCardProps) {
   return (
     <Card className="bg-black border-gold-900/30">
       <CardContent className="p-4">
@@ -73,9 +101,23 @@ function SummaryCard({ icon: Icon, label, value }) {
   );
 }
 
-function CampaignRow({ campaign }) {
-  const statusColors = {
-    active: "bg-green-500/20 text-green-400",
+  interface Campaign {
+    id: string;
+    name: string;
+    title: string;
+    status: string;
+    budget: number;
+    spent: number;
+    clicks: number;
+    impressions: number;
+  }
+
+interface CampaignRowProps {
+  campaign: Campaign;
+}
+
+function CampaignRow({ campaign }: CampaignRowProps) {
+  const statusColors: Record<string, string> = {
     paused: "bg-yellow-500/20 text-yellow-400",
     pending: "bg-gray-500/20 text-gray-400",
     completed: "bg-blue-500/20 text-blue-400",

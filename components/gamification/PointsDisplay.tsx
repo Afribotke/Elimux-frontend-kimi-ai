@@ -2,7 +2,12 @@
 
 import { Trophy, Star, TrendingUp } from "lucide-react";
 
-export function PointsDisplay({ points, badges = [] }) {
+interface PointsDisplayProps {
+  points: number;
+  badges?: { id: string; badge_name: string }[];
+}
+
+export function PointsDisplay({ points, badges = [] }: PointsDisplayProps) {
   const latestBadge = badges[0];
 
   return (

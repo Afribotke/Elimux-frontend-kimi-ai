@@ -2,7 +2,15 @@
 
 import { Star } from "lucide-react";
 
-export function StarRating({ rating, maxRating = 5, size = 20, interactive = false, onRatingChange }) {
+interface StarRatingProps {
+  rating: number;
+  maxRating?: number;
+  size?: number;
+  interactive?: boolean;
+  onRatingChange?: (rating: number) => void;
+}
+
+export function StarRating({ rating, maxRating = 5, size = 20, interactive = false, onRatingChange }: StarRatingProps) {
   return (
     <div className="flex gap-1">
       {Array.from({ length: maxRating }, (_, i) => {
