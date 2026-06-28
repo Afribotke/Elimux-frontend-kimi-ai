@@ -101,3 +101,5 @@ function StatCard({ number, label }) {
     </div>
   );
 }
+
+// Force rebuild: 2026-06-28 22:19:21
