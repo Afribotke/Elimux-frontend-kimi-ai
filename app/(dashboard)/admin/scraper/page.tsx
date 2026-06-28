@@ -16,7 +16,7 @@ export default function ScraperPage() {
   "programSelector": ".program"
 }`);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<any>(null);
 
   async function handleScrape() {
     setLoading(true);
@@ -28,8 +28,8 @@ export default function ScraperPage() {
       });
       const data = await response.json();
       setResult(data);
-    } catch (error) {
-      setResult({ error: error.message });
+    } catch (error: any) {
+      setResult({ error: error.message || "Unknown error" });
     } finally {
       setLoading(false);
     }
