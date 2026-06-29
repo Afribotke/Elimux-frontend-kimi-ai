@@ -91,3 +91,33 @@ export async function getFeaturedInstitutions(limit: number = 6): Promise<Instit
   return (data || []) as Institution[]
 }
 
+export interface AdminStats {
+  totalInstitutions: number
+  totalPrograms: number
+  totalUsers: number
+  totalApplications: number
+  totalRevenue: number
+}
+
+export async function getAdminStats(): Promise<AdminStats> {
+  const [
+    institutionsRes,
+    programsRes,
+    usersRes,
+    applicationsRes
+  ] = await Promise.all([
+    supabase.from('institutions').select('*', { count: 'exact', head: true }),
+    supabase.from('programs').select('*', { count: 'exact', head: true }),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('applications').select('*', { count: 'exact', head: true })
+  ])
+
+  return {
+    totalInstitutions: institutionsRes.count || 0,
+    totalPrograms: programsRes.count || 0,
+    totalUsers: usersRes.count || 0,
+    totalApplications: applicationsRes.count || 0,
+    totalRevenue: 0
+  }
+}
+
