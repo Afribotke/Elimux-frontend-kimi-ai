@@ -178,3 +178,116 @@ export async function deleteInstitution(id: string): Promise<void> {
   }
 }
 
+export interface Program {
+  id: string
+  institution_id: string
+  name: string
+  degree_type: string
+  duration_months: number
+  tuition_fees: number | null
+  currency: string
+  description: string | null
+  requirements: string[] | null
+  career_paths: string[] | null
+  created_at: string
+}
+
+export interface ProgramInput {
+  institution_id: string
+  name: string
+  degree_type: string
+  duration_months: number
+  tuition_fees: number | null
+  currency: string
+  description: string | null
+  requirements: string[] | null
+  career_paths: string[] | null
+}
+
+export async function getPrograms(): Promise<Program[]> {
+  const { data, error } = await supabase
+    .from('programs')
+    .select('*')
+    .order('name', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching programs:', error)
+    throw new Error('Failed to fetch programs: ' + error.message)
+  }
+
+  return (data || []) as Program[]
+}
+
+export async function getProgramsByInstitution(institutionId: string): Promise<Program[]> {
+  const { data, error } = await supabase
+    .from('programs')
+    .select('*')
+    .eq('institution_id', institutionId)
+    .order('name', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching programs by institution:', error)
+    throw new Error('Failed to fetch programs: ' + error.message)
+  }
+
+  return (data || []) as Program[]
+}
+
+export async function createProgram(data: ProgramInput): Promise<Program | null> {
+  const { data: result, error } = await supabase
+    .from('programs')
+    .insert(data)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating program:', error)
+    throw new Error('Failed to create program: ' + error.message)
+  }
+
+  return result as Program
+}
+
+export async function updateProgram(id: string, data: Partial<ProgramInput>): Promise<Program | null> {
+  const { data: result, error } = await supabase
+    .from('programs')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating program:', error)
+    throw new Error('Failed to update program: ' + error.message)
+  }
+
+  return result as Program
+}
+
+export async function deleteProgram(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('programs')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error deleting program:', error)
+    throw new Error('Failed to delete program: ' + error.message)
+  }
+}
+
+export async function getProgramById(id: string): Promise<Program | null> {
+  const { data, error } = await supabase
+    .from('programs')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error('Error fetching program:', error)
+    return null
+  }
+
+  return data as Program
+}
+
