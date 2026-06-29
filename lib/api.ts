@@ -121,3 +121,60 @@ export async function getAdminStats(): Promise<AdminStats> {
   }
 }
 
+export interface InstitutionInput {
+  name: string
+  country: string
+  city: string
+  type: string
+  description: string
+  website: string | null
+  accreditation: string | null
+  ranking: number | null
+  founded_year: number | null
+  student_count: number | null
+  logo_url: string | null
+}
+
+export async function createInstitution(data: InstitutionInput): Promise<Institution | null> {
+  const { data: result, error } = await supabase
+    .from('institutions')
+    .insert(data)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating institution:', error)
+    throw new Error('Failed to create institution: ' + error.message)
+  }
+
+  return result as Institution
+}
+
+export async function updateInstitution(id: string, data: Partial<InstitutionInput>): Promise<Institution | null> {
+  const { data: result, error } = await supabase
+    .from('institutions')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating institution:', error)
+    throw new Error('Failed to update institution: ' + error.message)
+  }
+
+  return result as Institution
+}
+
+export async function deleteInstitution(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('institutions')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error deleting institution:', error)
+    throw new Error('Failed to delete institution: ' + error.message)
+  }
+}
+
