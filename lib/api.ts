@@ -8,6 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
 export interface Institution {
   id: string
   name: string
+  type: string
   country: string
   city: string
   description: string
@@ -89,3 +90,4 @@ export async function getFeaturedInstitutions(limit: number = 6): Promise<Instit
 
   return (data || []) as Institution[]
 }
+
