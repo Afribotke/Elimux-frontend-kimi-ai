@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { Mail, ArrowLeft, Sparkles } from "lucide-react";
+import { Mail, ArrowLeft, Sparkles, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 interface ComingSoonProps {
@@ -130,6 +130,18 @@ export function ComingSoon({
             </button>
           </form>
         </div>
+
+        {/* WhatsApp Contact */}
+        <a
+          href="https://wa.me/254793002436"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-8"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <span>Chat on WhatsApp</span>
+          <span className="animate-bounce">💬</span>
+        </a>
 
         {/* Back to Home */}
         <Link
