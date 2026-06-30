@@ -291,3 +291,97 @@ export async function getProgramById(id: string): Promise<Program | null> {
   return data as Program
 }
 
+export interface UserProfile {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+  role: 'student' | 'admin' | 'institution_admin' | 'sponsor'
+  country: string | null
+  phone: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface UserFilters {
+  role?: string
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export async function getUsers(filters: UserFilters = {}): Promise<UserProfile[]> {
+  let query = supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (filters.role) {
+    query = query.eq('role', filters.role)
+  }
+
+  if (filters.search) {
+    query = query.or('full_name.ilike.%' + filters.search + '%,email.ilike.%' + filters.search + '%')
+  }
+
+  if (filters.limit) {
+    query = query.limit(filters.limit)
+  }
+
+  if (filters.offset) {
+    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Error fetching users:', error)
+    throw new Error('Failed to fetch users: ' + error.message)
+  }
+
+  return (data || []) as UserProfile[]
+}
+
+export async function getUserById(id: string): Promise<UserProfile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error('Error fetching user:', error)
+    return null
+  }
+
+  return data as UserProfile
+}
+
+export async function updateUserRole(id: string, role: UserProfile['role']): Promise<UserProfile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ role })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating user role:', error)
+    throw new Error('Failed to update user role: ' + error.message)
+  }
+
+  return data as UserProfile
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('profiles')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Error deleting user:', error)
+    throw new Error('Failed to delete user: ' + error.message)
+  }
+}
+
