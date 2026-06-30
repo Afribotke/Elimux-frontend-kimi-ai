@@ -359,14 +359,17 @@ export async function updateUserRole(id: string, role: UserProfile['role']): Pro
     .update({ role })
     .eq('id', id)
     .select()
-    .single()
 
   if (error) {
     console.error('Error updating user role:', error)
     throw new Error('Failed to update user role: ' + error.message)
   }
 
-  return data as UserProfile
+  if (!data || data.length === 0) {
+    return null
+  }
+
+  return data[0] as UserProfile
 }
 
 export async function deleteUser(id: string): Promise<void> {
