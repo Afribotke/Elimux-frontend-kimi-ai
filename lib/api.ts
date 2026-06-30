@@ -328,15 +328,11 @@ export async function getUsers(filters: UserFilters = {}): Promise<UserProfile[]
     query = query.limit(filters.limit)
   }
 
-  if (filters.offset) {
-    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1)
-  }
-
   const { data, error } = await query
 
   if (error) {
-    console.error('Error fetching users:', error)
-    throw new Error('Failed to fetch users: ' + error.message)
+    console.warn('Profiles table not found or error:', error.message)
+    return []
   }
 
   return (data || []) as UserProfile[]

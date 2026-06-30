@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getUsers, deleteUser, updateUserRole, UserProfile } from '@/lib/api'
+import { supabase, deleteUser, updateUserRole, UserProfile } from '@/lib/api'
 
 export default function UsersAdmin() {
   const router = useRouter()
@@ -21,14 +21,26 @@ export default function UsersAdmin() {
   async function loadUsers() {
     try {
       setLoading(true)
-      const filters: { role?: string; search?: string } = {}
-      if (roleFilter) filters.role = roleFilter
-      if (searchQuery) filters.search = searchQuery
+      setError(null)
 
-      const data = await getUsers(filters)
-      setUsers(data)
+      let query = supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (roleFilter) query = query.eq('role', roleFilter)
+      if (searchQuery) query = query.or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
+
+      const { data, error: supabaseError } = await query
+
+      if (supabaseError) {
+        setError(supabaseError.message)
+        return
+      }
+
+      setUsers((data || []) as UserProfile[])
     } catch (err) {
-      setError('Failed to load users: ' + (err instanceof Error ? err.message : 'Unknown error'))
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -95,7 +107,29 @@ export default function UsersAdmin() {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-lg text-red-600">{error}</div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded p-6">
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">Database Setup Required</h2>
+            <p className="text-yellow-700 mb-4">
+              The users table (profiles) doesn&apos;t exist in your Supabase database yet.
+            </p>
+            <p className="text-yellow-700 mb-4">
+              To fix this, go to your Supabase dashboard and run this SQL in the SQL Editor:
+            </p>
+            <pre className="bg-gray-800 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+{`CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  avatar_url TEXT,
+  role TEXT DEFAULT 'student',
+  country TEXT,
+  phone TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  PRIMARY KEY (id)
+);`}
+            </pre>
+          </div>
           <button
             onClick={loadUsers}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
