@@ -36,7 +36,10 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/login">
+          <Link href="/auth/signup" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+            Sign Up
+          </Link>
+          <Link href="/auth/login">
             <Button size="sm">Sign In</Button>
           </Link>
         </div>
@@ -64,7 +67,14 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/login" onClick={() => setIsOpen(false)}>
+          <Link
+            href="/auth/signup"
+            className="block text-sm font-medium text-gray-600 hover:text-blue-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Sign Up
+          </Link>
+          <Link href="/auth/login" onClick={() => setIsOpen(false)}>
             <Button size="sm" className="w-full">Sign In</Button>
           </Link>
         </div>
