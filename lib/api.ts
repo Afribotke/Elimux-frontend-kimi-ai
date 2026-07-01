@@ -5,6 +5,33 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+
+async function apiFetch(path: string, options: RequestInit = {}): Promise<any> {
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    throw new Error('You must be signed in to perform this action')
+  }
+
+  const res = await fetch(apiUrl + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + session.access_token,
+      ...options.headers
+    }
+  })
+
+  const body = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(body?.error || 'Request failed with status ' + res.status)
+  }
+
+  return body
+}
+
 export interface Institution {
   id: string
   name: string
@@ -136,45 +163,37 @@ export interface InstitutionInput {
 }
 
 export async function createInstitution(data: InstitutionInput): Promise<Institution | null> {
-  const { data: result, error } = await supabase
-    .from('institutions')
-    .insert(data)
-    .select()
-    .single()
-
-  if (error) {
+  try {
+    const body = await apiFetch('/api/institutions', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    return body.institution as Institution
+  } catch (error) {
     console.error('Error creating institution:', error)
-    throw new Error('Failed to create institution: ' + error.message)
+    throw new Error('Failed to create institution: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
-
-  return result as Institution
 }
 
 export async function updateInstitution(id: string, data: Partial<InstitutionInput>): Promise<Institution | null> {
-  const { data: result, error } = await supabase
-    .from('institutions')
-    .update(data)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
+  try {
+    const body = await apiFetch('/api/institutions/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+    return body.institution as Institution
+  } catch (error) {
     console.error('Error updating institution:', error)
-    throw new Error('Failed to update institution: ' + error.message)
+    throw new Error('Failed to update institution: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
-
-  return result as Institution
 }
 
 export async function deleteInstitution(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('institutions')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
+  try {
+    await apiFetch('/api/institutions/' + id, { method: 'DELETE' })
+  } catch (error) {
     console.error('Error deleting institution:', error)
-    throw new Error('Failed to delete institution: ' + error.message)
+    throw new Error('Failed to delete institution: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
 }
 
@@ -234,45 +253,37 @@ export async function getProgramsByInstitution(institutionId: string): Promise<P
 }
 
 export async function createProgram(data: ProgramInput): Promise<Program | null> {
-  const { data: result, error } = await supabase
-    .from('programs')
-    .insert(data)
-    .select()
-    .single()
-
-  if (error) {
+  try {
+    const body = await apiFetch('/api/programs', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    return body.program as Program
+  } catch (error) {
     console.error('Error creating program:', error)
-    throw new Error('Failed to create program: ' + error.message)
+    throw new Error('Failed to create program: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
-
-  return result as Program
 }
 
 export async function updateProgram(id: string, data: Partial<ProgramInput>): Promise<Program | null> {
-  const { data: result, error } = await supabase
-    .from('programs')
-    .update(data)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
+  try {
+    const body = await apiFetch('/api/programs/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+    return body.program as Program
+  } catch (error) {
     console.error('Error updating program:', error)
-    throw new Error('Failed to update program: ' + error.message)
+    throw new Error('Failed to update program: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
-
-  return result as Program
 }
 
 export async function deleteProgram(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('programs')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
+  try {
+    await apiFetch('/api/programs/' + id, { method: 'DELETE' })
+  } catch (error) {
     console.error('Error deleting program:', error)
-    throw new Error('Failed to delete program: ' + error.message)
+    throw new Error('Failed to delete program: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
 }
 
