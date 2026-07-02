@@ -7,29 +7,29 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
 
-async function apiFetch(path: string, options: RequestInit = {}): Promise<any> {
+async function getAuthToken(): Promise<string | null> {
   const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token ?? null
+}
 
-  if (!session) {
-    throw new Error('You must be signed in to perform this action')
-  }
+async function apiFetch(path: string, options: RequestInit = {}): Promise<any> {
+  const token = await getAuthToken()
 
   const res = await fetch(apiUrl + path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + session.access_token,
+      Authorization: 'Bearer ' + token,
       ...options.headers
     }
   })
 
-  const body = await res.json().catch(() => null)
-
   if (!res.ok) {
-    throw new Error(body?.error || 'Request failed with status ' + res.status)
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'Request failed with status ' + res.status)
   }
 
-  return body
+  return res.json()
 }
 
 export interface Institution {
