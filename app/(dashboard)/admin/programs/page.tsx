@@ -2,29 +2,33 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getPrograms, deleteProgram, Program, getInstitutions, Institution } from '@/lib/api'
+import { getAdminPrograms, deleteProgram, Program, getInstitutions, Institution } from '@/lib/api'
 
 export default function ProgramsAdmin() {
   const router = useRouter()
   const [programs, setPrograms] = useState<Program[]>([])
   const [institutions, setInstitutions] = useState<Institution[]>([])
+  const [pagination, setPagination] = useState<{ page: number; limit: number; total: number; totalPages: number } | null>(null)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [filterInstitution, setFilterInstitution] = useState<string>('')
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData(page)
+  }, [page])
 
-  async function loadData() {
+  async function loadData(p: number) {
     try {
       setLoading(true)
-      const [programsData, institutionsData] = await Promise.all([
-        getPrograms(),
+      setError(null)
+      const [programsRes, institutionsData] = await Promise.all([
+        getAdminPrograms(p, 20),
         getInstitutions()
       ])
-      setPrograms(programsData)
+      setPrograms(programsRes.data)
+      setPagination(programsRes.pagination)
       setInstitutions(institutionsData)
     } catch (err) {
       setError('Failed to load data: ' + (err instanceof Error ? err.message : 'Unknown error'))
@@ -34,12 +38,12 @@ export default function ProgramsAdmin() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this program?')) return
+    if (!confirm('Are you sure you want to delete this program? This cannot be undone.')) return
 
     try {
       setDeleting(id)
       await deleteProgram(id)
-      setPrograms(programs.filter(p => p.id !== id))
+      loadData(page)
     } catch (err) {
       alert('Failed to delete: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
@@ -56,7 +60,7 @@ export default function ProgramsAdmin() {
     ? programs.filter(p => p.institution_id === filterInstitution)
     : programs
 
-  if (loading) {
+  if (loading && programs.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto">
@@ -72,7 +76,7 @@ export default function ProgramsAdmin() {
         <div className="max-w-7xl mx-auto">
           <div className="text-lg text-red-600">{error}</div>
           <button
-            onClick={loadData}
+            onClick={() => loadData(page)}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Retry
@@ -168,6 +172,28 @@ export default function ProgramsAdmin() {
             </div>
           )}
         </div>
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 rounded border disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-3 py-1 text-sm text-gray-600">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+              disabled={page === pagination.totalPages}
+              className="px-3 py-1 rounded border disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

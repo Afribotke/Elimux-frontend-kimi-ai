@@ -400,3 +400,17 @@ export async function deleteUser(id: string): Promise<void> {
   }
 }
 
+export async function initializePayment(email: string, amount: number, metadata: Record<string, any> = {}): Promise<{ success: boolean; authorization_url: string; reference: string }> {
+  return apiFetch('/api/payments/initialize', {
+    method: 'POST',
+    body: JSON.stringify({ email, amount, metadata })
+  })
+}
+
+export async function verifyPayment(reference: string): Promise<{ success: boolean; status: string; data: any }> {
+  return apiFetch('/api/payments/verify', {
+    method: 'POST',
+    body: JSON.stringify({ reference })
+  })
+}
+
