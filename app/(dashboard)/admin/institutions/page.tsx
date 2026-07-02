@@ -2,24 +2,27 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getInstitutions, deleteInstitution, Institution } from '@/lib/api'
+import { getAdminInstitutions, deleteInstitution, Institution } from '@/lib/api'
 
 export default function InstitutionsAdmin() {
   const router = useRouter()
   const [institutions, setInstitutions] = useState<Institution[]>([])
+  const [pagination, setPagination] = useState<{ page: number; limit: number; total: number; totalPages: number } | null>(null)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
-    loadInstitutions()
-  }, [])
+    loadInstitutions(page)
+  }, [page])
 
-  async function loadInstitutions() {
+  async function loadInstitutions(p: number) {
     try {
       setLoading(true)
-      const data = await getInstitutions()
-      setInstitutions(data)
+      const response = await getAdminInstitutions(p, 20)
+      setInstitutions(response.data)
+      setPagination(response.pagination)
     } catch (err) {
       setError('Failed to load institutions: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
@@ -28,12 +31,12 @@ export default function InstitutionsAdmin() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this institution?')) return
+    if (!confirm('Are you sure you want to delete this institution? This cannot be undone.')) return
 
     try {
       setDeleting(id)
       await deleteInstitution(id)
-      setInstitutions(institutions.filter(i => i.id !== id))
+      loadInstitutions(page)
     } catch (err) {
       alert('Failed to delete: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
@@ -57,7 +60,7 @@ export default function InstitutionsAdmin() {
         <div className="max-w-7xl mx-auto">
           <div className="text-lg text-red-600">{error}</div>
           <button
-            onClick={loadInstitutions}
+            onClick={() => loadInstitutions(page)}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Retry
@@ -138,6 +141,28 @@ export default function InstitutionsAdmin() {
             </div>
           )}
         </div>
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 rounded border disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-3 py-1 text-sm text-gray-600">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+              disabled={page === pagination.totalPages}
+              className="px-3 py-1 rounded border disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

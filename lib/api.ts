@@ -126,26 +126,31 @@ export interface AdminStats {
   totalRevenue: number
 }
 
-export async function getAdminStats(): Promise<AdminStats> {
-  const [
-    institutionsRes,
-    programsRes,
-    usersRes,
-    applicationsRes
-  ] = await Promise.all([
-    supabase.from('institutions').select('*', { count: 'exact', head: true }),
-    supabase.from('programs').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('applications').select('*', { count: 'exact', head: true })
-  ])
+export async function getAdminStats(): Promise<{ success: boolean; stats: AdminStats & { totalReviews: number; recentInstitutions: Institution[]; recentPrograms: Program[] } }> {
+  return apiFetch('/api/admin/stats')
+}
 
-  return {
-    totalInstitutions: institutionsRes.count || 0,
-    totalPrograms: programsRes.count || 0,
-    totalUsers: usersRes.count || 0,
-    totalApplications: applicationsRes.count || 0,
-    totalRevenue: 0
+export interface PaginatedResponse<T> {
+  success: boolean
+  data: T[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
   }
+}
+
+export async function getAdminInstitutions(page: number = 1, limit: number = 20): Promise<PaginatedResponse<Institution>> {
+  return apiFetch('/api/admin/institutions?page=' + page + '&limit=' + limit)
+}
+
+export async function getAdminPrograms(page: number = 1, limit: number = 20): Promise<PaginatedResponse<Program>> {
+  return apiFetch('/api/admin/programs?page=' + page + '&limit=' + limit)
+}
+
+export async function getAdminUsers(page: number = 1, limit: number = 20): Promise<PaginatedResponse<UserProfile>> {
+  return apiFetch('/api/admin/users?page=' + page + '&limit=' + limit)
 }
 
 export interface InstitutionInput {
@@ -156,10 +161,10 @@ export interface InstitutionInput {
   description: string
   website: string | null
   accreditation: string | null
-  ranking: number | null
+  ranking?: number | null
   founded_year: number | null
-  student_count: number | null
-  logo_url: string | null
+  student_count?: number | null
+  logo_url?: string | null
 }
 
 export async function createInstitution(data: InstitutionInput): Promise<Institution | null> {
